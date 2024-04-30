@@ -1,6 +1,24 @@
-import express from "express";
-const app = express();
+import dotenv from "dotenv";
+dotenv.config({
+  path: "./env",
+});
 
-app.get("/api/v1/", (req, res) => res.send("Express on Vercel"));
+import connectDB from "./db/dbConfig.js";
+import { app } from "./app.js";
 
-app.listen(3000, () => console.log("Server ready on port 3000."));
+connectDB()
+  .then(() => {
+    app.on("error", (err) => {
+      console.log("SERVER ERROR ❌ ", err);
+      process.exit(1);
+    });
+
+    const port = process.env.PORT || 8000;
+
+    app.listen(port, () => {
+      console.log(`⚙️  SERVER is RUNNING at port : ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log("MONGODB connection FAILED ❌ ", err);
+  });
